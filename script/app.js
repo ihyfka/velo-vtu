@@ -19,15 +19,11 @@ tznStatusContainer.forEach(tsc => {
 })
 
 
-
-
 function showInterface() {
   // service[0].addEventListener("click", airtimeModal);
   // service[1].addEventListener("click", dataModal);
   // service[2].addEventListener("click", sendModal);
 
-
-  
   for(let m=0;m<service.length;m++) {
     service[m].addEventListener("click", ()=> {
       vtOverlay.style.display = "flex";
@@ -49,8 +45,6 @@ function hideInterface() {
   }
 }
 hideInterface();
-
-
 
 
 

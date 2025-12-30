@@ -152,6 +152,7 @@ async function authenticate(req, res, next) {
       return next();
     }
     console.error("No credentials found. Blocking access.");
+    res.redirect("/login");
   }catch(err) {
     res.clearCookie("session");
     res.clearCookie("userInfo");
@@ -174,9 +175,9 @@ app.get("/getstarted", (req, res) => {
 
 /* dashboard */
 app.get("/dashboard", authenticate, (req, res) => {
-  // res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  // res.setHeader("Pragma", "no-cache");
-  // res.setHeader("Expires", "0");
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   res.sendFile(path.join(__dirname, "dist", "src", "main", "app.html"));
 })
 

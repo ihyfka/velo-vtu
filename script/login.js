@@ -69,7 +69,6 @@ export function initLoader(run) {
   
   const text = document.createElement('div');
   text.className = 'loader-text';
-  // text.innerText = 'Loading...';
   overlay.appendChild(spinner, text);
   document.body.appendChild(overlay);
 }

@@ -40,12 +40,6 @@
 }
 
 
-
-
-
-
-
-
 /* loader.css */
 .loader-overlay {
   position: absolute;
@@ -70,14 +64,6 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1.25rem;
-}
-
-.loader-text {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #333;
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
 }
 
 @keyframes spin {
