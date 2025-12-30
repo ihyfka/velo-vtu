@@ -1,0 +1,87 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --maintxt: "Raleway", "Segoe UI", Tahoma, serif;
+  --primarytxt: "Roboto Slab", Verdana, sans-serif;
+  --sectxt: "Trebuchet MS", "Lucida Sans Unicode", Arial, sans-serif;
+  --ftrtxt: "Lato", "Franklin Gothic Medium", sans-serif;
+  
+  --stepcount-co: #1b264c;
+  --std-min-height: 100dvh;
+  --full-per: 100%;
+  --p-light: #fff;
+  --p-dark: #000;
+
+  --default-bg: #000;
+  --icon-fill: #000;
+  --other-icon: #bbb;
+  --clean-border: #1b1b1e;
+
+  --primary-color: #0066ff;
+  --primary-hover: #0052cc;
+  --text-dark: #333333;
+  --text-light: #666666;
+  --bg-light: #f4f6f9de;
+  --white: #ffffff;
+  --input-bg: #f9f9f9;
+  --input-border: #cecece;
+  --shadow: 0 10px 40px #00000014;
+  --radius: 15px;
+
+  --soft-b: #4f7cff;
+  --positive: #2dc24e;
+  --negative: #fc2222;
+  --positive-bg: #2dc24e10;
+  --negative-bg: #fc222210;
+}
+
+
+
+
+
+
+
+
+/* loader.css */
+.loader-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: #1117; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s;
+  z-index: 99;
+}
+
+.spinner {
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 4px solid #dfdfdf;
+  border-top: 4px solid #007bff; 
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.25rem;
+}
+
+.loader-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg) }
+}
+/* end of loader */

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="../resources/images/velo-high-resolution-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/resources/app.css">
+  <link rel="stylesheet" href="/src/global.css">
+  <script type="module" src="/script/app.js" defer></script>
+  <title>Velo</title>
+</head>
+<body>
+
+
+  <div id="container">
+    <nav>
+      <div class="dashboard-header">Dashboard.</div>
+      <div class="other-nav-header">
+        <div>
+          <svg class="notifications" fill="#eaeffc" width="30px" height="30px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10,21h4a2,2,0,0,1-4,0ZM3.076,18.383a1,1,0,0,1,.217-1.09L5,15.586V10a7.006,7.006,0,0,1,6-6.92V2a1,1,0,0,1,2,0V3.08A7.006,7.006,0,0,1,19,10v5.586l1.707,1.707A1,1,0,0,1,20,19H4A1,1,0,0,1,3.076,18.383ZM6.414,17H17.586l-.293-.293A1,1,0,0,1,17,16V10A5,5,0,0,0,7,10v6a1,1,0,0,1-.293.707Z"/>
+          </svg>
+        </div>
+        <div>
+          <img class="pfp" src="/src/resources/images/ne" alt="profile">
+        </div>
+      </div>
+    </nav>
+    <img class="app-bg" src="/src/resources/images/6248154.jpg">
+    <div class="header-for-mobile">
+      <p>Hi, <span class="verified-username"></span><br>
+        What are we doing today?</p>
+    </div>
+
+    <div class="main">
+      <div class="services-suppport-container">
+        <div id="services">
+          <div class="air service">
+            <span>Airtime</span>
+            <svg width="80px" height="80px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><style>.fill{fill:none;stroke:var(--icon-fill);stroke-miterlimit:10;stroke-width:1.9px;}</style></defs>
+              <path d="M18.75,21.38c-2.43,2.42-8,.79-12.46-3.67S.2,7.68,2.62,5.25L5.28,2.59l5.13,5.13L8.49,9.66a2.07,2.07,0,0,0,0,2.92l2.93,2.93a2.07,2.07,0,0,0,2.92,0l1.94-1.92,5.13,5.13Z"/>
+            </svg>
+          </div>
+          <div class="data service">
+            <span>Data</span>
+            <svg width="80px" height="80px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 7L1.17157 5.82843C2.98259 4.01741 5.43884 3 8 3C10.5612 3 13.0174 4.01742 14.8284 5.82843L16 7L14.5858 8.41421L13.4142 7.24264C11.9783 5.8067 10.0307 5 8 5C5.96928 5 4.02173 5.8067 2.58579 7.24264L1.41421 8.41421L0 7Z" fill="var(--icon-fill)"/>
+                <path d="M4.24264 11.2426L2.82843 9.82843L4 8.65685C5.06086 7.59599 6.49971 7 8 7C9.50029 7 10.9391 7.59599 12 8.65686L13.1716 9.82843L11.7574 11.2426L10.5858 10.0711C9.89999 9.38527 8.96986 9 8 9C7.03014 9 6.1 9.38527 5.41421 10.0711L4.24264 11.2426Z" fill="var(--icon-fill)"/>
+                <path d="M8 15L5.65685 12.6569L6.82842 11.4853C7.13914 11.1746 7.56057 11 8 11C8.43942 11 8.86085 11.1746 9.17157 11.4853L10.3431 12.6569L8 15Z" fill="var(--icon-fill)"/>
+            </svg>
+          </div>
+          <div class="send service">
+            <span>Send</span>
+            <svg class="send" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80px" height="80px" viewBox="0 0 31.806 31.806" xml:space="preserve">
+              <g><g>
+		            <path fill="var(--icon-fill)" d="M1.286,12.465c-0.685,0.263-1.171,0.879-1.268,1.606c-0.096,0.728,0.213,1.449,0.806,1.88l6.492,4.724L30.374,2.534
+			            L9.985,22.621l8.875,6.458c0.564,0.41,1.293,0.533,1.964,0.33c0.67-0.204,1.204-0.713,1.444-1.368l9.494-25.986
+			            c0.096-0.264,0.028-0.559-0.172-0.756c-0.199-0.197-0.494-0.259-0.758-0.158L1.286,12.465z"/>
+		            <path d="M5.774,22.246l0.055,0.301l1.26,6.889c0.094,0.512,0.436,0.941,0.912,1.148c0.476,0.206,1.025,0.162,1.461-0.119c1.755-1.132,4.047-2.634,3.985-2.722L5.774,22.246z"/>
+	            </g></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="support-flashcard">
+          <div>
+            <svg width="80px" height="80px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+              <g fill="var(--other-icon)" transform="translate(42.666667, 42.666667)">
+                <path d="M379.734355,174.506667 C373.121022,106.666667 333.014355,-2.13162821e-14 209.067688,-2.13162821e-14 C85.1210217,-2.13162821e-14 45.014355,106.666667 38.4010217,174.506667 C15.2012632,183.311569 -0.101643453,205.585799 0.000508304259,230.4 L0.000508304259,260.266667 C0.000508304259,293.256475 26.7445463,320 59.734355,320 C92.7241638,320 119.467688,293.256475 119.467688,260.266667 L119.467688,230.4 C119.360431,206.121456 104.619564,184.304973 82.134355,175.146667 C86.4010217,135.893333 107.307688,42.6666667 209.067688,42.6666667 C310.827688,42.6666667 331.521022,135.893333 335.787688,175.146667 C313.347976,184.324806 298.68156,206.155851 298.667688,230.4 L298.667688,260.266667 C298.760356,283.199651 311.928618,304.070103 332.587688,314.026667 C323.627688,330.88 300.801022,353.706667 244.694355,360.533333 C233.478863,343.50282 211.780225,336.789048 192.906491,344.509658 C174.032757,352.230268 163.260418,372.226826 167.196286,392.235189 C171.132153,412.243552 188.675885,426.666667 209.067688,426.666667 C225.181549,426.577424 239.870491,417.417465 247.041022,402.986667 C338.561022,392.533333 367.787688,345.386667 376.961022,317.653333 C401.778455,309.61433 418.468885,286.351502 418.134355,260.266667 L418.134355,230.4 C418.23702,205.585799 402.934114,183.311569 379.734355,174.506667 Z M76.8010217,260.266667 C76.8010217,269.692326 69.1600148,277.333333 59.734355,277.333333 C50.3086953,277.333333 42.6676884,269.692326 42.6676884,260.266667 L42.6676884,230.4 C42.6676884,224.302667 45.9205765,218.668499 51.2010216,215.619833 C56.4814667,212.571166 62.9872434,212.571166 68.2676885,215.619833 C73.5481336,218.668499 76.8010217,224.302667 76.8010217,230.4 L76.8010217,260.266667 Z M341.334355,230.4 C341.334355,220.97434 348.975362,213.333333 358.401022,213.333333 C367.826681,213.333333 375.467688,220.97434 375.467688,230.4 L375.467688,260.266667 C375.467688,269.692326 367.826681,277.333333 358.401022,277.333333 C348.975362,277.333333 341.334355,269.692326 341.334355,260.266667 L341.334355,230.4 Z"></path>
+              </g>
+              </g>
+            </svg>
+            <div>Support</div>
+          </div>
+
+          <div class="support-info">
+            Need help? Reach out at
+            <p>xcool.lad@gmail.com</p>
+          </div>
+          </div> 
+      </div>
+    
+      <div id="transaction-history-container">
+        <div class="transaction-block-header">
+          <p>Last transactions</p>
+        </div>
+      
+        <div class="transaction-history-block">
+          <div class="transaction-receipt">
+            <div class="tzn-cold-status" data-status="successful">
+              <svg class="tzn-svg success-status" width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 17L17 7M17 7H8M17 7V16" stroke="var(--positive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p>Sent Airtime</p>
+              <p>15th Nov. 13:12</p>
+            </div>
+            <div class="amount-transacted">
+              + &#x20A6;300
+            </div>
+          </div>
+
+          <div class="transaction-receipt">
+            <div class="tzn-cold-status" data-status="successful">
+              <svg class="tzn-svg success-status" width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 17L17 7M17 7H8M17 7V16" stroke="var(--positive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p>Bought Data</p>
+              <p>15th Nov. 4:02</p>
+            </div>
+            <div class="amount-transacted">
+              - &#8358;800
+            </div>
+          </div>
+
+          <div class="transaction-receipt">
+            <div class="tzn-cold-status" data-status="successful">
+              <svg class="tzn-svg failed-status" width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 7L17 17M17 17V7M17 17H7" stroke="var(--negative)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p>Bought Airtime</p>
+              <p>29th Oct. 5:10</p>
+            </div>
+            <div class="amount-transacted">
+              - &#8358;50
+            </div>
+          </div>
+
+          <div class="transaction-receipt">
+            <div class="tzn-cold-status" data-status="successful">
+              <svg class="tzn-svg failed-status" width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 7L17 17M17 17V7M17 17H7" stroke="var(--negative)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p>Bought Airtime</p>
+              <p>29th Oct. 5:10</p>
+            </div>
+            <div class="amount-transacted">
+              - &#8358;50
+            </div>
+          </div>
+          
+          <div class="transaction-receipt">
+            <div class="tzn-cold-status" data-status="successful">
+              <svg class="tzn-svg success-status" width="80px" height="80px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 17L17 7M17 7H8M17 7V16" stroke="var(--positive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p>Sent Airtime</p>
+              <p>15th Nov. 13:12</p>
+            </div>
+            <div class="amount-transacted">
+              + &#x20A6;300
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+<div id="vt-overlay">
+  <div class="vt-interface">
+    <div>
+      <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 -960 960 960" width="25px" fill="#e3e3e3">
+        <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+      </svg>
+    </div>
+
+    <form>
+      <div>
+        <img src="/src/resources/images/idpPEucm5F_logos.jpeg" alt="mobile_carrier">
+        <div>
+          <p class="recipient-num">+2349011541737</p>
+          <p class="recipient-num-change">Edit number</p>
+        </div>
+      </div>
+
+      <span>Top up Airtime</span>
+      <div>
+        <div class="pdf-amt"><span>&#8358;</span>50</div>
+        <div class="pdf-amt"><span>&#8358;</span>100</div>
+        <div class="pdf-amt"><span>&#8358;</span>200</div>
+        <div class="pdf-amt"><span>&#8358;</span>500</div>
+        <div class="pdf-amt"><span>&#8358;</span>1000</div>
+        <div class="pdf-amt"><span>&#8358;</span>2000</div>
+      </div>
+    
+      <div class="vt-amount">   
+        <div>
+          <span>&#8358;</span>
+          <input type="number" max="20000">
+        </div>
+        <button>Proceed</button>
+      </div>
+
+    </form>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            
+            <div class="step active" id="stepInput">
+                <h2 class="modal-title" id="modalTitle">Buy Airtime</h2>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" class="form-input" placeholder="0801 234 5678">
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount (₦)</label>
+                    <input type="number" id="amount" class="form-input" placeholder="500">
+                </div>
+                <button class="btn-primary" onclick="processTransaction()">Proceed</button>
+            </div>
+
+            <div class="step" id="stepProcessing">
+                <div class="spinner"></div>
+                <h3>Processing...</h3>
+                <p class="processing-text">Connecting to provider...</p>
+            </div>
+
+            <div class="step" id="stepSuccess">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h3>Transaction Successful!</h3>
+                
+                <div class="receipt-details">
+                    <div class="receipt-row">
+                        <span class="text-muted">Type</span>
+                        <span id="receiptType">Airtime</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="text-muted">Number</span>
+                        <span id="receiptNumber">080...</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="text-muted">Amount</span>
+                        <span id="receiptAmount">₦0.00</span>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="closeModal()">Done</button>
+            </div>
+
+        </div>
+</div> -->
+
+
+
+
+    <div id="app-footer">
+      <div>
+        <a href="/privacy-policy"><span>Privacy</span></a>
+        <a href="/terms"><span>Terms</span></a>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
