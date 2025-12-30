@@ -1,11 +1,7 @@
-##
 .env
 serviceAccountKey.json
-
-#dependencies
 node_modules
 dist
-
-#ide metadata
 .vscode/
 npm-debug-log
+*.log
