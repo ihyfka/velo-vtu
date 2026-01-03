@@ -18,7 +18,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "type": "module"
 }

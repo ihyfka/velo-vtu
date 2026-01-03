@@ -10,6 +10,7 @@
   --sectxt: "Trebuchet MS", "Lucida Sans Unicode", Arial, sans-serif;
   --ftrtxt: "Lato", "Franklin Gothic Medium", sans-serif;
   
+  --w-svg: #eaeffc;
   --stepcount-co: #1b264c;
   --std-min-height: 100dvh;
   --full-per: 100%;
@@ -20,6 +21,16 @@
   --icon-fill: #000;
   --other-icon: #bbb;
   --clean-border: #1b1b1e;
+
+
+  --cheap: #0cd689;
+  --multi-n: #b0c0cf;
+  --support: #e68554;
+  --ui: #49b9e6;
+  --aon: #003366;
+  --secure: #2f77b3;
+  --ms: #fa9315;
+  
 
   --primary-color: #0066ff;
   --primary-hover: #0052cc;
@@ -35,8 +46,8 @@
   --soft-b: #4f7cff;
   --positive: #2dc24e;
   --negative: #fc2222;
-  --positive-bg: #2dc24e10;
-  --negative-bg: #fc222210;
+  --positive-bg: #2dc24e09;
+  --negative-bg: #fc222209;
 }
 
 

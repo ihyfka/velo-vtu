@@ -1,8 +1,7 @@
 import DOMPurify from "dompurify";
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-let app, auth, provider;
+import { app, auth, provider } from "./global.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
   
 if(typeof document !== 'undefined') {
   /* pages, links */
@@ -24,52 +23,32 @@ if(typeof document !== 'undefined') {
   const logWSignInBtn = signInPage?.querySelector(".btn-primary");
   const createAccountBtn = signUpPage?.querySelector(".btn-primary");
   const sendEmailBtn = forgotPasswordPage?.querySelector(".btn-primary");
-
   /* functions  */
-for(let i=0;i<logWSocialBtn.length;i++) {
-  logWSocialBtn[i]?.addEventListener("click", (e)=>{
-    e.preventDefault();
-    authWGoogle();
+  for(let i=0;i<logWSocialBtn.length;i++) {
+    logWSocialBtn[i]?.addEventListener("click", (e)=>{
+      e.preventDefault();
+      authWGoogle();
+    })
+  }
+  logWSignInBtn?.addEventListener("click", signInWEmail);
+  signUpPasskey?.addEventListener("input", ()=>{
+    if(signUpPasskey !== "") {
+      document.querySelector("#requirements").style.display = "block";
+    }
   })
+  signInLink.forEach(link => {link.addEventListener("click", (e) => { e.preventDefault(); switchView('signin-view') })})
+  signUpLink?.addEventListener("click", (e) => { e.preventDefault(); switchView('signup-view') })
+  forgotPasswordLink?.addEventListener("click", (e) => { e.preventDefault(); switchView('forgot-view') })
+  createAccountBtn?.addEventListener("click", createAccountWEmail);
 }
 
-logWSignInBtn?.addEventListener("click", signInWEmail);
-signUpPasskey?.addEventListener("input", ()=>{
-  if(signUpPasskey !== "") {
-    document.querySelector("#requirements").style.display = "block";
-  }
-})
-
-signInLink.forEach(link => {link.addEventListener("click", (e) => { e.preventDefault(); switchView('signin-view') })})
-signUpLink?.addEventListener("click", (e) => { e.preventDefault(); switchView('signup-view') })
-forgotPasswordLink?.addEventListener("click", (e) => { e.preventDefault(); switchView('forgot-view') })
-createAccountBtn?.addEventListener("click", createAccountWEmail);
-}
-
-/* start firebase */
-export async function startFirebase() {
-  try {
-    const res = await fetch("/firebase-config");
-    if(!res.ok) throw new Error(`firebase config loading failed: ${res.status}`);
-    const firebaseConfig = await res.json();
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    provider = new GoogleAuthProvider();  
-  }finally {
-    return app, auth, provider;
-  }
-} startFirebase();
 export function initLoader(run) {
   if(run === false) return;
   const overlay = document.createElement('div');
   overlay.className = "loader-overlay";
-  
   const spinner = document.createElement('div');
   spinner.className = 'spinner';
-  
-  const text = document.createElement('div');
-  text.className = 'loader-text';
-  overlay.appendChild(spinner, text);
+  overlay.appendChild(spinner);
   document.body.appendChild(overlay);
 }
 async function finalizeLogin(user) {
@@ -84,7 +63,6 @@ async function finalizeLogin(user) {
       body: JSON.stringify({ idToken }),
     });
     if(!sessionAuthRes.ok) throw new Error(`Session auth failed: ${sessionAuthRes.status}`);    
-    
     // Redirect to dashboard; add animation
     initLoader(true);
     window.location.replace("/dashboard");
@@ -99,7 +77,6 @@ async function authWGoogle() {
   const data = await response.json();
   window.location.href = data.url;
 }
-
 /* actions. */
 function switchView(viewId) {
   const views = document.querySelectorAll('.view-section');
@@ -111,7 +88,6 @@ function switchView(viewId) {
     targetView.classList.add('active');
   }
 }
-
 /* validate session for firebase auth */
 async function signInWEmail() {
   const signInPage = document.querySelector("#signin-view");
@@ -128,7 +104,6 @@ async function signInWEmail() {
     }, 1000)
     return; //input missing
   }
-
   try {
     const userCredential = await signInWithEmailAndPassword(auth, userSignInEmail, userPasskeyInput);
     await finalizeLogin(userCredential.user);
@@ -166,7 +141,7 @@ async function createAccountWEmail() {
     await updateProfile(userCredential.user, {displayName: userEnteredName});
     console.log("account creation successful")
     await finalizeLogin(userCredential.user);
-  }catch {
+  }catch(err) {
     //password criteria not met..
     initLoader(false);
     document.querySelector("#requirements").style.display = "block";
@@ -174,8 +149,10 @@ async function createAccountWEmail() {
     setTimeout(()=>{
       document.querySelector("#requirements").style.color = "#444a";
     }, 4000)
+    console.log(err)
     console.log("account creation unsuccessful");
   }
-} 
+}
+
 
      

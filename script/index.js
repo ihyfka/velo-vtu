@@ -1,3 +1,42 @@
+window.addEventListener('CookieInformationConsentGiven', function (event) {
+  console.log("User preferences:", CookieInformation.getConsent());
+}, false);
+
+const menu = document.querySelector(".menu");
+const closeMenu = document.querySelector(".closesvg");
+const navOverlay = document.querySelector(".ham-overlay");
+const sidebar = document.querySelector(".sidebar");
+const menuLink = sidebar.querySelectorAll(".m-link");
+
+function showModal() {
+  document.body.style.overflow = "hidden";
+  menu.style.display = "none";
+  navOverlay.style.display = "block";
+  sidebar.style.display = "block";
+  sidebar.classList.add("vis");
+} menu.addEventListener("click", showModal);  
+
+function hideModal() {
+  document.body.style.overflow = "auto";
+  menu.style.display = "inline-block";
+  navOverlay.style.display = "none";
+  sidebar.style.display = "none"; 
+  sidebar.classList.remove("vis");
+}
+
+for(let a=0;a<menuLink.length;a++) {
+  menuLink[a].addEventListener("click", (e)=> {
+    hideModal();
+  });
+} 
+closeMenu.addEventListener("click", hideModal);
+navOverlay.addEventListener("click", (e)=> {
+  if(!sidebar.contains(e.currentTarget)) {
+    e.stopPropagation();
+    hideModal();
+  }
+})
+
 const section = document.querySelectorAll("section");
 const secObserver = new IntersectionObserver(section => {
   section.forEach(box => {
@@ -42,5 +81,6 @@ function typeEffect() {
   setTimeout(typeEffect, isDeleting ? deleteSpeed: speed);
 }
 document.addEventListener("DOMContentLoaded", typeEffect);
+
 
 

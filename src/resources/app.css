@@ -17,9 +17,9 @@ body {
   object-fit: cover;
   height: var(--full-per);
   width: var(--full-per);
-  filter: brightness(.7);
+  filter: brightness(.2);
   z-index: -1;
-  background: #181818;
+  background: #00000CFE;
 }
 
 nav {
@@ -31,7 +31,7 @@ nav {
   align-items: center;
   padding: 1rem .7rem;
   border-bottom: 1px solid var(--clean-border);
-  background: #090a0e;
+  background: #020306;
   z-index: 1;
 }
 
@@ -63,8 +63,8 @@ nav {
 }
 
 .other-nav-header img {
-  width: 25px;
-  height: 25px;
+  width: 27px;
+  height: 27px;
   border-radius: 50%;
 }
 
@@ -123,6 +123,7 @@ nav {
   margin-bottom: .3rem;
   width: 30px;
   height: 30px;
+  flex-shrink: 0;
 }
 .air { background: #fef08a } .air:hover { filter: drop-shadow(0 0 3px #fef08a90) }
 .data { background: #d8b4fe } .data:hover { filter: drop-shadow(0 0 3px #d8b4fe90) }
@@ -183,7 +184,16 @@ nav {
 .transaction-history-block {
   display: flex;
   flex-direction: column;
+  max-height: 28rem; 
+  overflow: hidden auto; 
   gap: 1rem;
+}
+.transaction-history-block::-webkit-scrollbar {
+  width: 4px;
+}
+.transaction-history-block::-webkit-scrollbar-thumb {
+  background: #444a;
+  border-radius: 10px;
 }
 
 .transaction-receipt {
@@ -228,19 +238,19 @@ nav {
 
 .transaction-receipt div:nth-child(2) p:last-child {
   font-size: .8rem;
-  color: oklab(73.802% 0 -0.00008);
+  color: #aaaaaa;
 }
 
 .amount-transacted {
   align-items: center;
   font-weight: 400;
   font-weight: .9rem;
-  color: oklab(67.31099999999999% -0.13178 0.09494);
+  color: #4caf50;
 }
 
 #app-footer {
   padding: 2rem 1.5rem .7rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
   min-width: 30%;
 }
 #app-footer div {
@@ -429,7 +439,7 @@ form span {
   background: var(--primary-hover);
 }
 
-/* TABLET RESPONSIVENESS (min-width: 768px) */
+/* tabs */
 @media screen and (min-width:426px) {
   nav {
     padding: 1rem;
@@ -448,7 +458,6 @@ form span {
   }
   .header-for-mobile {
     font-size: 2.1rem;
-    font-style: italic;
   }
   .header-for-mobile span {
     font-size: 2.5rem;
@@ -491,7 +500,7 @@ form span {
 }
 
 
-  /* LAPTOP/DESKTOP RESPONSIVENESS (min-width: 1024px) */
+  /* laptops */
 @media screen and (min-width: 785px) {
   nav {
     padding: 1.3rem .9rem;
@@ -537,13 +546,17 @@ form span {
     padding: 1.3rem;
     width: max-content;        
     border-radius: 15px;
-    background: oklab(19.487% -0.00227 -0.01537); 
+    background: #11151c; 
     border: 1px solid var(--clean-border);
   }
+  .support-info p {
+    transition: scale .2s ease, transform .2s ease, color .2s ease-out;
+  }
+
   .support-flashcard:hover .support-info p {
-    scale: 1.1;
-    transform: translateX(7px);
-    color: oklab(68.699% -0.03539 -0.09711);
+    scale: 1.05;
+    transform: translateX(5px);
+    color: #679fd8;
     cursor: pointer;
   }
   #transaction-history-container {
