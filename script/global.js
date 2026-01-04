@@ -1,6 +1,5 @@
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import { initializeApp } from "firebase/app";
-import { initLoader } from "./login.js";
 
 async function startFirebase() {
   let app, auth, provider;
@@ -11,12 +10,6 @@ async function startFirebase() {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     provider = new GoogleAuthProvider();
-    onAuthStateChanged(auth, (user) => {
-      if(user) {
-        // initLoader(true);
-        window.location.href = "/dashboard";
-      } return;
-    })
   }finally {
     return { app, auth, provider };
   }

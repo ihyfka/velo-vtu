@@ -81,6 +81,3 @@ function typeEffect() {
   setTimeout(typeEffect, isDeleting ? deleteSpeed: speed);
 }
 document.addEventListener("DOMContentLoaded", typeEffect);
-
-
-

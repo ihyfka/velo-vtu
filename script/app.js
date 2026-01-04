@@ -15,7 +15,6 @@ const handOffToken = sessionStorage.getItem("tempSess");
   }
 }) ();
 
-
 const service = document.querySelectorAll(".service");
 const vtOverlay = document.querySelector("#vt-overlay");
 const vtInterface = document.querySelector(".vt-interface");

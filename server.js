@@ -9,6 +9,7 @@ import { initLoader } from "./script/login.js";
 import axios from "axios";
 import cors from "cors";
 import path from "path";
+import session from "express-session";
 import cookieParser from "cookie-parser";
 import createDOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
@@ -25,7 +26,16 @@ app.use(cors({ origin: true, credentials: true }));
 app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(express.json());
-
+app.use(session({
+  secret: process.env.SESSION_SIGN,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: true, 
+    sameSite: "lax",   
+  }
+}))
 
 /* start OAuth client */
 const client = new OAuth2Client(
@@ -33,6 +43,73 @@ const client = new OAuth2Client(
   process.env.GOOGLE_SECRET_ID,
   process.env.AUTH_REDIRECT_URL,
 )
+
+/* middleware */
+async function authenticate(req, res, next) {
+  if(req.session && req.session.user) {
+    req.user = req.session.user;
+    console.log(`exp session for ${req.user.email} verified`);
+    return next();
+  }else {
+    console.error("No credentials found. Blocking access.");
+    return res.redirect("/login");
+  }
+}
+async function alreadyAuthenticated(req, res, next) {
+  if(req.session && req.session.user) {
+    console.log(`exp session for ${req.session.user.email} verified`);
+    return res.redirect("/dashboard");
+  }
+  next();
+}
+
+/* serves firebase.config */
+app.get("/firebase-config", (req, res) => {
+  res.json({
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID
+  })
+})
+/* initializing admin */
+initializeApp({
+  credential: cert(serviceAccount),
+});
+
+/* fb session */
+app.post("/sessionAuth", async (req, res) => {
+  // get idToken
+  const idToken = req.body.idToken || req.headers.authorization?.split('Bearer ')[1];
+  if(!idToken) return res.status(400).json({error: "No token"});
+  try {
+    // verify idtoken
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    // added security
+    if(new Date().getTime() / 1000 - decodedToken.auth_time > 10 * 60) {
+      return res.status(401).json({ error: "Recent sign-in required" });
+    }
+    req.session.regenerate((err) => {
+      if(err) return res.status(500).json({ error: "session zombie hit" }); //zombie session present
+    })
+    // create session
+    req.session.user = {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      name: decodedToken.name || "User",
+      provider: "firebase"
+    }; req.session.save((err) => {
+      if(err) console.error("fb session save failed", err);
+    })
+    return res.json();
+  }catch (err) {
+    console.error(err);
+    res.status(401).json({ err: "Unauthorized firebase session" });
+  }
+});
 
 /* start social auth */
 app.post("/google/auth", async (req, res) => {
@@ -47,7 +124,7 @@ app.post("/google/auth", async (req, res) => {
   res.json({ url: authorizeUrl })
 })
 
-/* S2S and intermediary redirect handling {callback} */
+/* S2S and intermediary redirect handling {g session} */
 app.get("/google-auth", async (req, res) => {
   const { code } = req.query;
   if(!code) return res.status(400).send("No authorization.");
@@ -58,151 +135,37 @@ app.get("/google-auth", async (req, res) => {
       idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-    const payload = ticket.getPayload(); // payload contains user info.
-    const trimmedPayload = {
-      name: payload.name,
+    const payload = ticket.getPayload(); // payload contains user info.    
+
+    req.session.user = {
+      uid: payload.sub,
       email: payload.email,
+      name: payload.name,
       picture: payload.picture,
-      id: payload.sub,
       provider: "google"
     };
     
-    let googleFirebaseUid;
-    try {
-      const userYet = await admin.auth().getUserByEmail(trimmedPayload.email);
-      googleFirebaseUid = userYet.uid;
-    }catch(err) {
-      if(err.code === "auth/user-not-found") {
-        const firstTimer = await admin.auth().createUser({
-          email: trimmedPayload.email,
-          displayName: trimmedPayload.name,
-          photoURL: trimmedPayload.picture,
-          emailVerified: true,
-        })
-        googleFirebaseUid = firstTimer.uid;
-      }else {
-        throw err;
-      }
-    }
-    
-    // const customToken = await admin.auth().createCustomToken(googleFirebaseUid);
-    // const interHandoff = `
-    //   <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" 
-    //   content="width=device-width, initial-scale=1"><title> </title></head><body>
-    //   <script>initLoader(true); sessionStorage.setItem("tempSess", "${customToken}"); window.location.replace("/dashboard");</script>
-    //   </body></html>
-    // `;
-    // res.send(interHandoff);
-
-
-    //const token = jwt.sign(trimmedPayload, process.env.JWT_SIGN, { expiresIn: "1d" });
-    // res.cookie("userInfo", token, {
-    //   path: "/",
-    //   maxAge: 30000,
-    //   httpOnly: true,
-    //   secure: true, 
-    //   sameSite: "lax",
-    // })   
-    // res.redirect("/dashboard");
-
-
+    req.session.save((err) => { //saved and redirected
+      if(err) console.error("google-session creation err", err);      
+      return res.redirect("/dashboard");
+    })
   }catch (err) {
-    res.status(401).json({ err: "Invalid or tampered session" });
+    res.status(401).json({ err: "Invalid or tampered google session" });
     return res.redirect("/login");
   }
 })
 
-/* serves firebase.config */
-app.get("/firebase-config", (req, res) => {
-  res.json({
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID
-  })
-})
-
-/* initializing admin */
-initializeApp({
-  credential: cert(serviceAccount),
-});
-const SESSION_COOKIE_NAME = "session";
-const SESSION_EXPIRES = 3 * 24 * 60 * 60 * 1000;
-/* create a fb session */
-app.post("/sessionAuth", async (req, res) => {
-  // check for idTokens
-  const idToken = req.body.idToken || req.headers.authorization?.split('Bearer ')[1];
-  if(!idToken) return res.status(400).json({error: "No token"});
-  try {
-    // verify idtoken
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    // added security
-    if(new Date().getTime() / 1000 - decodedToken.auth_time > 10 * 60) {
-      return res.status(401).json({ error: "Recent sign-in required" });
-    }
-    // create a sess cookie
-    const sessionCookie = await admin.auth().createSessionCookie(idToken, {
-      expiresIn: SESSION_EXPIRES,
-    });
-    // set (HTTP-only, secure) cookie
-    res.cookie(SESSION_COOKIE_NAME, sessionCookie, {
-      maxAge: SESSION_EXPIRES,
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
-    return res.json();
-    // res.json({ message: "Login successful", uid: decodedToken.uid });
-  }catch (err) {
-    console.error(err);
-    res.status(401).json({ err: "Unauthorized" });
-  }
-});
-
-/* middleware */
-async function authenticate(req, res, next) {
-  const sessionCookie = req.cookies[SESSION_COOKIE_NAME] || "";
-  const userInfoCookie = req.cookies.userInfo;
-  try {
-    let decodedClaims;
-    if(sessionCookie) { // for firebase
-      decodedClaims = await admin.auth().verifySessionCookie(sessionCookie, true);
-      req.user = decodedClaims; // attach userinfo to req
-      console.log(`firebase session for ${req.user.email} verified`);
-      return next();
-    }else if(userInfoCookie) { // google
-      decodedClaims = jwt.verify(userInfoCookie, process.env.JWT_SIGN);
-      req.user = decodedClaims;
-      console.log(`google session for ${req.user.email} verified`);
-      return next();
-    }
-    console.error("No credentials found. Blocking access.");
-    //res.redirect("/login");
-  }catch(err) {
-    res.clearCookie("session");
-    res.clearCookie("userInfo");
-    return res.redirect("/login");
-  }
-}
 
 /* landing page */
-app.get("/", (req, res) => {
-  const userInfoCookie = req.cookies.userInfo;
-  // if(userInfoCookie) {
-  //   console.log()
-  //   return res.redirect("/dashboard");
-  // }
+app.get("/", alreadyAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 })
 
 /* signup/login page */
-app.get("/login", (req, res) => {
+app.get("/login", alreadyAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "resources", "login.html"));
 })
-app.get("/getstarted", (req, res) => {
+app.get("/getstarted", alreadyAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "resources", "login.html"));
 })
 
@@ -226,7 +189,7 @@ app.get("/privacy-policy", (req, res) => {
 
 /* user logout */
 app.post("/logout", (req, res) => {
-  res.clearCookie(SESSION_COOKIE_NAME);
+  // res.clearCookie(SESSION_COOKIE_NAME);
   res.json({ message: "Logged out." });
   window.location.replace("/login");
 });

@@ -51,7 +51,8 @@ export function initLoader(run) {
   overlay.appendChild(spinner);
   document.body.appendChild(overlay);
 }
-async function finalizeLogin(user) {
+
+async function finalizeLogin(user) { //originally for firebase
   try {
     const idToken = await user.getIdToken();
     const sessionAuthRes = await fetch("/sessionAuth", {
@@ -63,20 +64,20 @@ async function finalizeLogin(user) {
       body: JSON.stringify({ idToken }),
     });
     if(!sessionAuthRes.ok) throw new Error(`Session auth failed: ${sessionAuthRes.status}`);    
-    // Redirect to dashboard; add animation
-    initLoader(true);
     window.location.replace("/dashboard");
   }catch(error) {
     console.error("Session creation failed:", error);
   }
 }
-async function authWGoogle() {
+
+async function authWGoogle() { //originally for google
   const response = await fetch("/google/auth", {
     method: 'POST'
   });
   const data = await response.json();
   window.location.href = data.url;
 }
+
 /* actions. */
 function switchView(viewId) {
   const views = document.querySelectorAll('.view-section');
@@ -90,6 +91,7 @@ function switchView(viewId) {
 }
 /* validate session for firebase auth */
 async function signInWEmail() {
+  initLoader(true);
   const signInPage = document.querySelector("#signin-view");
   const signInEmail = signInPage?.querySelectorAll("input")[0];
   const signInPasskey = signInPage?.querySelectorAll("input")[1];
@@ -97,6 +99,7 @@ async function signInWEmail() {
   const userPasskeyInput = signInPasskey.value;
   const userSignInEmail = DOMPurify.sanitize(userEmailInput);
   if(!userEmailInput || !userPasskeyInput) {
+    initLoader(false);
     document.querySelector("#err-cred").classList.add("vis");
     document.querySelector("#err-cred").textContent = "Incomplete credentials.";
     setTimeout(()=>{
@@ -137,6 +140,7 @@ async function createAccountWEmail() {
     return; //input missing
   }
   try {
+    initLoader(true);
     const userCredential = await createUserWithEmailAndPassword(auth, userEnteredEmailInput, userEnteredPasskeyInput);
     await updateProfile(userCredential.user, {displayName: userEnteredName});
     console.log("account creation successful")
@@ -154,5 +158,3 @@ async function createAccountWEmail() {
   }
 }
 
-
-     
