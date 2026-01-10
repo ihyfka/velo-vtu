@@ -5,7 +5,6 @@ import { initializeApp, cert } from "firebase-admin/app";
 import serviceAccount from "./serviceAccountKey.json" with {type: "json"};
 import { JWT, OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
-import { initLoader } from "./script/login.js";
 import axios from "axios";
 import cors from "cors";
 import path from "path";
@@ -22,6 +21,12 @@ const DOMPurify = createDOMPurify(window);
 const app = express();
 const PORT = process.env.PORT || 80;
 
+const CARRIER_CHECKER_URL = process.env.CARRIER_CHECKER_URL;
+const CARRIER_KEY_HEADER = process.env.CARRIER_KEY_HEADER;
+const CARRIER_HOST_HEADER = process.env.CARRIER_HOST_HEADER;
+const CARRIER_SERVICE_KEY = process.env.CARRIER_SERVICE_KEY;
+const CARRIER_SERVICE_HOST = process.env.CARRIER_SERVICE_HOST;
+
 app.use(cors({ origin: true, credentials: true }));
 app.set('trust proxy', 1);
 app.use(cookieParser());
@@ -33,9 +38,12 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: true, 
-    sameSite: "lax",   
+    sameSite: "lax",
+    maxAge: 60* 60* 24* 3* 1000,
   }
 }))
+
+
 
 /* start OAuth client */
 const client = new OAuth2Client(
@@ -57,7 +65,7 @@ async function authenticate(req, res, next) {
 }
 async function alreadyAuthenticated(req, res, next) {
   if(req.session && req.session.user) {
-    console.log(`exp session for ${req.session.user.email} verified`);
+    console.log(`expi session for ${req.session.user.email} verified`);
     return res.redirect("/dashboard");
   }
   next();
@@ -162,10 +170,10 @@ app.get("/", alreadyAuthenticated, (req, res) => {
 })
 
 /* signup/login page */
-app.get("/login", alreadyAuthenticated, (req, res) => {
+app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "resources", "login.html"));
 })
-app.get("/getstarted", alreadyAuthenticated, (req, res) => {
+app.get("/getstarted", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "resources", "login.html"));
 })
 
@@ -175,6 +183,23 @@ app.get("/dashboard", authenticate, (req, res) => {
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
   res.sendFile(path.join(__dirname, "dist", "src", "main", "app.html"));
+})
+
+/* mobile carrier check */
+app.get("/mobile/validate", async (req, res) => {//?phone=%2B2349011541737
+  try {
+    const apiRes = await axios.get(`${CARRIER_CHECKER_URL}`, {
+      headers: {
+        [CARRIER_KEY_HEADER]: process.env.CARRIER_SERVICE_KEY,
+        [CARRIER_HOST_HEADER]: process.env.CARRIER_SERVICE_HOST,
+      },
+      params: req.query,
+    })
+    res.json(apiRes.data);
+  }catch(error){
+    console.error('Error proxying request:', error.message);
+    res.status(500).json({error: 'Internal Server Error' });
+  }
 })
 
 /* terms */
@@ -189,9 +214,12 @@ app.get("/privacy-policy", (req, res) => {
 
 /* user logout */
 app.post("/logout", (req, res) => {
-  // res.clearCookie(SESSION_COOKIE_NAME);
-  res.json({ message: "Logged out." });
-  window.location.replace("/login");
+  req.session.destroy((error) => {
+    if(error) return res.status(500).send("Logout failed");
+    res.clearCookie("connect.sid");
+    res.json({ message: `user @ ${req.user} logged out.` });
+    return res.redirect("/login");
+  })
 });
 
 /* routing endboss-- for routing files that dont actually exist i.e /dashboard */

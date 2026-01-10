@@ -4,26 +4,25 @@ import { app, auth, provider } from "./global.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
   
 if(typeof document !== 'undefined') {
-  /* pages, links */
   const signInPage = document.querySelector("#signin-view");
   const signUpPage = document.querySelector("#signup-view");
   const forgotPasswordPage = document.querySelector("#forgot-view");
   const signInLink = document.querySelectorAll(".signin-link");
   const signUpLink = document.querySelector(".signup-link");
   const forgotPasswordLink = document.querySelector(".forgot-link");
-  /* inputs */
+
   const signUpName = signUpPage?.querySelectorAll("input")[0];
   const signUpEmail = signUpPage?.querySelectorAll("input")[1];
   const signUpPasskey = signUpPage?.querySelectorAll("input")[2];
   const signInEmail = signInPage?.querySelectorAll("input")[0];
   const signInPasskey = signInPage?.querySelectorAll("input")[1];
   const forgotEmailBtn = forgotPasswordPage?.querySelectorAll("input")[0];
-  /* buttons & actions */
+
   const logWSocialBtn = document.querySelectorAll(".social-btn");
   const logWSignInBtn = signInPage?.querySelector(".btn-primary");
   const createAccountBtn = signUpPage?.querySelector(".btn-primary");
   const sendEmailBtn = forgotPasswordPage?.querySelector(".btn-primary");
-  /* functions  */
+ 
   for(let i=0;i<logWSocialBtn.length;i++) {
     logWSocialBtn[i]?.addEventListener("click", (e)=>{
       e.preventDefault();
@@ -42,8 +41,7 @@ if(typeof document !== 'undefined') {
   createAccountBtn?.addEventListener("click", createAccountWEmail);
 }
 
-export function initLoader(run) {
-  if(run === false) return;
+export function initLoader() {
   const overlay = document.createElement('div');
   overlay.className = "loader-overlay";
   const spinner = document.createElement('div');
@@ -51,8 +49,12 @@ export function initLoader(run) {
   overlay.appendChild(spinner);
   document.body.appendChild(overlay);
 }
+export function stopLoader() {
+  const loaderOverlay = document.querySelector(".loader-overlay");
+  if(loaderOverlay) loaderOverlay.remove();
+}
 
-async function finalizeLogin(user) { //originally for firebase
+async function finalizeLogin(user) { //originally for fb
   try {
     const idToken = await user.getIdToken();
     const sessionAuthRes = await fetch("/sessionAuth", {
@@ -70,7 +72,7 @@ async function finalizeLogin(user) { //originally for firebase
   }
 }
 
-async function authWGoogle() { //originally for google
+async function authWGoogle() { //originally for g
   const response = await fetch("/google/auth", {
     method: 'POST'
   });
@@ -78,7 +80,6 @@ async function authWGoogle() { //originally for google
   window.location.href = data.url;
 }
 
-/* actions. */
 function switchView(viewId) {
   const views = document.querySelectorAll('.view-section');
   views.forEach(view => {
@@ -89,9 +90,9 @@ function switchView(viewId) {
     targetView.classList.add('active');
   }
 }
-/* validate session for firebase auth */
+/* validate fb session */
 async function signInWEmail() {
-  initLoader(true);
+  initLoader();
   const signInPage = document.querySelector("#signin-view");
   const signInEmail = signInPage?.querySelectorAll("input")[0];
   const signInPasskey = signInPage?.querySelectorAll("input")[1];
@@ -99,20 +100,20 @@ async function signInWEmail() {
   const userPasskeyInput = signInPasskey.value;
   const userSignInEmail = DOMPurify.sanitize(userEmailInput);
   if(!userEmailInput || !userPasskeyInput) {
-    initLoader(false);
+    stopLoader();
     document.querySelector("#err-cred").classList.add("vis");
     document.querySelector("#err-cred").textContent = "Incomplete credentials.";
     setTimeout(()=>{
       document.querySelector("#err-cred").classList.remove("vis");
     }, 1000)
-    return; //input missing
+    return;
   }
   try {
     const userCredential = await signInWithEmailAndPassword(auth, userSignInEmail, userPasskeyInput);
     await finalizeLogin(userCredential.user);
     console.log("signed in");
   }catch(err) {
-    initLoader(false);
+    stopLoader();
     document.querySelector("#err-cred").classList.add("vis");
     document.querySelector("#err-cred").textContent = "Invalid username or password.";
     setTimeout(()=>{
@@ -132,22 +133,23 @@ async function createAccountWEmail() {
   const userEnteredEmailInput = DOMPurify.sanitize(userEmailInput);
   const userEnteredPasskeyInput = signUpPasskey.value;
   if(!userEnteredName || !userEnteredEmailInput || !userEnteredPasskeyInput) {
+    stopLoader();
     document.querySelector("#err-cred").classList.add("vis");
     document.querySelector("#err-cred").textContent = "Incomplete credentials.";
     setTimeout(()=>{
       document.querySelector("#err-cred").classList.remove("vis");
     }, 1000)
-    return; //input missing
+    return; 
   }
   try {
-    initLoader(true);
+    initLoader();
     const userCredential = await createUserWithEmailAndPassword(auth, userEnteredEmailInput, userEnteredPasskeyInput);
     await updateProfile(userCredential.user, {displayName: userEnteredName});
     console.log("account creation successful")
     await finalizeLogin(userCredential.user);
   }catch(err) {
     //password criteria not met..
-    initLoader(false);
+    stopLoader()
     document.querySelector("#requirements").style.display = "block";
     document.querySelector("#requirements").style.color = "#f33";
     setTimeout(()=>{

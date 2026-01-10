@@ -201,9 +201,6 @@ nav {
   will-change: transform;
   animation: infinit 80s linear infinite;
 }
-.group:hover {
-  animation-play-state: paused;
-}
 @keyframes infinit {
   from {
     transform: translateX(0);
@@ -520,7 +517,7 @@ nav {
     position: absolute;
     top:0; right:0;
     display: none;
-    height: 63dvh;
+    height: 65dvh;
     padding: .5rem .3rem;
     width: clamp(65%, 70%, 75%);
     font-family: var(--sectxt);
@@ -548,13 +545,15 @@ nav {
   .sidebar div a {
     display: block;
     margin: 1rem 0 1rem;
+    min-width:min-content;
+    width: 90%;
+    border-bottom: .1px solid var(--text-light);
     padding: 2rem 1rem .5rem 1.3rem;
     font-size: 1.2rem;
     text-decoration: none;
     color: var(--clean-border);
   }
   .sidebar div:hover {
-    color: var(--positive);
     background: #03f2;
   }
   .hero-msg {
@@ -583,15 +582,18 @@ nav {
   }
   .group {
     gap: 1.7rem;
-    animation: infinit 40s linear infinite;
+    animation: infinit 38s linear infinite;
   }
   .reason {
     padding: 1rem;
-    height: 8rem;
-    min-width: 9rem;  
+    height: 9rem;
+    min-width: 11rem;  
     border-radius: 15px;
   }
-  .reason:last-child {
+  .group .reason:first-child {
+    margin-left: 0;
+  }
+  .group .reason:last-child {
     margin-right: 1.7rem;
   }
   .icon-wrapper {
@@ -607,7 +609,7 @@ nav {
   }
   .reason span {
     margin-bottom: .7rem;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--p-light);
   }

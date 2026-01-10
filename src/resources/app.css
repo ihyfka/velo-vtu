@@ -17,7 +17,7 @@ body {
   object-fit: cover;
   height: var(--full-per);
   width: var(--full-per);
-  filter: brightness(.2);
+  filter: brightness(.34);
   z-index: -1;
   background: #00000CFE;
 }
@@ -328,15 +328,28 @@ nav {
 }
 
 .recipient-num-change {
-  cursor: pointer;
-  color: var(--soft-b);
+  margin-top: .3rem;
+  font-size: 1rem;
 }
 
 .vt-interface img {
+  filter:grayscale(.6) brightness(.5);
   margin-right: 4%;
   width: 2.7rem;
   height: 2.7rem;
   border-radius: 50%;
+}
+.carrier.vis {
+  animation: blurblur 2s infinite forwards;
+}
+@keyframes blurblur {
+  0% {
+    opacity: .8;
+  }50%{
+    opacity: .3;
+  }100%{
+    opacity: .8;
+  }
 }
 
 .vt-interface input {
@@ -438,6 +451,40 @@ form span {
 .vt-amount button:hover {
   background: var(--primary-hover);
 }
+
+
+
+
+.data-sec .pdf-amt > p:first-child {
+  margin-bottom: .4rem;
+  font-size: .7rem;
+  font-weight: 300;
+  color: var(--input-border);
+}
+.data-sec .pdf-amt {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.data-sec .amt {
+  margin-bottom: .1rem;
+  font-size: 1.4rem;
+  font-weight: 550;
+  color: green;
+}
+.data-sec .bytes {
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-family: var(--ggflex);
+}
+
+
+
+
+
+
+
+
+
 
 /* tabs */
 @media screen and (min-width:426px) {
