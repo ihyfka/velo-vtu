@@ -16,8 +16,18 @@ body > img {
   object-fit: cover;
   width: var(--full-per);
   height: var(--full-per);
-  filter: brightness(.45);
+  filter: brightness(.7);
   z-index: -1;
+}
+
+.t {
+  position: absolute;
+  top: 1%; left: 3%;
+  font-family: var(--maintxt);
+  font-weight: 600;
+  font-style: italic;
+  font-size: 2rem;
+  color: var(--p-light);
 }
 
 #err-cred {
@@ -42,7 +52,7 @@ body > img {
 }
 
 .container {
-  background: var(--p-light);
+  background: var(--input-bg);
   width: var(--full-per);
   min-width: 18rem;
   max-width: 20rem;

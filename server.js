@@ -3,12 +3,11 @@ import dotenv from "dotenv"; dotenv.config();
 import admin from "firebase-admin";
 import { initializeApp, cert } from "firebase-admin/app";
 import serviceAccount from "./serviceAccountKey.json" with {type: "json"};
-import { JWT, OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
-import axios from "axios";
+import { OAuth2Client } from "google-auth-library";
+import crypto from "node:crypto";
+import axios from "axios"; 
 import cors from "cors";
 import path from "path";
-import session from "express-session";
 import cookieParser from "cookie-parser";
 import createDOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
@@ -29,23 +28,11 @@ const CARRIER_SERVICE_HOST = process.env.CARRIER_SERVICE_HOST;
 
 app.use(cors({ origin: true, credentials: true }));
 app.set('trust proxy', 1);
-app.use(cookieParser());
+app.use(cookieParser(process.env.P_SIGN));
 app.use(express.json());
-app.use(session({
-  secret: process.env.SESSION_SIGN,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: true, 
-    sameSite: "lax",
-    maxAge: 60* 60* 24* 3* 1000,
-  }
-}))
+app.use(express.static(path.join(__dirname, "dist"))); /* vite for static */
 
-
-
-/* start OAuth client */
+/* start client */
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_SECRET_ID,
@@ -54,21 +41,32 @@ const client = new OAuth2Client(
 
 /* middleware */
 async function authenticate(req, res, next) {
-  if(req.session && req.session.user) {
-    req.user = req.session.user;
-    console.log(`exp session for ${req.user.email} verified`);
+  const sessionCookie = req.cookies.session || "";
+  if(!sessionCookie) console.error("No credentials found. Blocking access.");
+  try {
+    const decodedToken = await admin.auth().verifySessionCookie(sessionCookie, true); 
+    req.user = decodedToken;
+    console.log(`session for ${req.user.email} verified`);
     return next();
-  }else {
-    console.error("No credentials found. Blocking access.");
+  }
+  catch(error) {
+    console.error(error.code, "Server verification failed");
+    res.clearCookie("session");
     return res.redirect("/login");
   }
 }
 async function alreadyAuthenticated(req, res, next) {
-  if(req.session && req.session.user) {
-    console.log(`expi session for ${req.session.user.email} verified`);
+  const sessionCookie = req.cookies.session || "";
+  if(!sessionCookie) return next();
+  try {
+    const decodedToken = await admin.auth().verifySessionCookie(sessionCookie, false); 
+    console.log(`Active ${decodedToken.email} session detected`);
     return res.redirect("/dashboard");
   }
-  next();
+  catch(error) {
+    res.clearCookie("session");
+    return next();
+  }
 }
 
 /* serves firebase.config */
@@ -83,93 +81,95 @@ app.get("/firebase-config", (req, res) => {
     measurementId: process.env.FIREBASE_MEASUREMENT_ID
   })
 })
-/* initializing admin */
-initializeApp({
-  credential: cert(serviceAccount),
-});
 
-/* fb session */
+/* init admin */
+initializeApp({ credential: cert(serviceAccount) });
+
 app.post("/sessionAuth", async (req, res) => {
-  // get idToken
   const idToken = req.body.idToken || req.headers.authorization?.split('Bearer ')[1];
   if(!idToken) return res.status(400).json({error: "No token"});
   try {
-    // verify idtoken
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    // added security
-    if(new Date().getTime() / 1000 - decodedToken.auth_time > 10 * 60) {
+    if(new Date().getTime() / 1000 - decodedToken.auth_time > 7 * 60) {
       return res.status(401).json({ error: "Recent sign-in required" });
     }
-    req.session.regenerate((err) => {
-      if(err) return res.status(500).json({ error: "session zombie hit" }); //zombie session present
+    const expiresIn = 60* 60* 24* 5* 1000;
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
+    res.cookie("session", sessionCookie, {  
+      httpOnly: true, 
+      sameSite: "lax",
+      maxAge: expiresIn,
+      secure: process.env.NODE_ENV === "production", 
     })
-    // create session
-    req.session.user = {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      name: decodedToken.name || "User",
-      provider: "firebase"
-    }; req.session.save((err) => {
-      if(err) console.error("fb session save failed", err);
-    })
-    return res.json();
+    return res.redirect("/dashboard");
   }catch (err) {
     console.error(err);
-    res.status(401).json({ err: "Unauthorized firebase session" });
+    res.status(401).json({ err: "Unauthorized session" });
   }
 });
 
-/* start social auth */
 app.post("/google/auth", async (req, res) => {
+  const state = crypto.randomBytes(32).toString("hex");
+  res.cookie("aState", state, {
+    httpOnly: true,
+    signed: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60* 4* 1000
+  })
   const authorizeUrl = client.generateAuthUrl({
     access_type: "offline",
     scope: [
       "openid",
       "https://www.googleapis.com/auth/userinfo.profile",
       "https://www.googleapis.com/auth/userinfo.email"
-    ]
+    ],
+    state: state,
   })
   res.json({ url: authorizeUrl })
 })
 
-/* S2S and intermediary redirect handling {g session} */
+/* S2S relay */
 app.get("/google-auth", async (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query;
   if(!code) return res.status(400).send("No authorization.");
+  if(!state || state !== req.signedCookies.aState) return res.status(403).send("Invalid state param");
   try { 
+    res.clearCookie("aState");
     const { tokens } = await client.getToken(code);
-    client.setCredentials(tokens);
-    const ticket = await client.verifyIdToken({
-      idToken: tokens.id_token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload(); // payload contains user info.    
-
-    req.session.user = {
-      uid: payload.sub,
-      email: payload.email,
-      name: payload.name,
-      picture: payload.picture,
-      provider: "google"
-    };
-    
-    req.session.save((err) => { //saved and redirected
-      if(err) console.error("google-session creation err", err);      
-      return res.redirect("/dashboard");
+    const googleIdToken = tokens.id_token;
+    const fbExchangeUrl = `${process.env.FB_EXCHANGE_URL}=${process.env.FIREBASE_API_KEY}`;
+    const exchangeRes = await fetch(fbExchangeUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        postBody: `id_token=${googleIdToken}&providerId=google.com`,
+        requestUri: process.env.AUTH_REDIRECT_URL,
+        returnIdpCredential: true,
+        returnSecureToken: true,
+      })
     })
+    const exchangeData = await exchangeRes.json();
+    if(!exchangeRes.ok) throw new Error("Token exchange failed");
+    const gIdToken = exchangeData.idToken;  
+    const expiresIn = 60* 60* 24* 5* 1000;
+    const sessionCookie = await admin.auth().createSessionCookie(gIdToken, { expiresIn });
+    res.cookie("session", sessionCookie, {  
+      httpOnly: true, 
+      sameSite: "lax",
+      maxAge: expiresIn,
+      secure: process.env.NODE_ENV === "production", 
+    })
+    return res.redirect("/dashboard");
   }catch (err) {
-    res.status(401).json({ err: "Invalid or tampered google session" });
+    console.log(`${err}: Invalid or tampered Auth`);
     return res.redirect("/login");
   }
 })
 
-
-/* landing page */
 app.get("/", alreadyAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 })
 
-/* signup/login page */
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "resources", "login.html"));
 })
@@ -177,7 +177,6 @@ app.get("/getstarted", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "resources", "login.html"));
 })
 
-/* dashboard */
 app.get("/dashboard", authenticate, (req, res) => {
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   res.setHeader("Pragma", "no-cache");
@@ -185,8 +184,7 @@ app.get("/dashboard", authenticate, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "src", "main", "app.html"));
 })
 
-/* mobile carrier check */
-app.get("/mobile/validate", async (req, res) => {//?phone=%2B2349011541737
+app.get("/mobile/validate", async (req, res) => {
   try {
     const apiRes = await axios.get(`${CARRIER_CHECKER_URL}`, {
       headers: {
@@ -202,33 +200,22 @@ app.get("/mobile/validate", async (req, res) => {//?phone=%2B2349011541737
   }
 })
 
-/* terms */
 app.get("/terms", (req, res) => {
   res.sendFile(path.join(__dirname, "dist","src", "resources", "terms.html"));
 })
 
-/* policy */
 app.get("/privacy-policy", (req, res) => {
   res.sendFile(path.join(__dirname, "dist","src", "resources", "policy.html"));
 })
 
-/* user logout */
 app.post("/logout", (req, res) => {
-  req.session.destroy((error) => {
-    if(error) return res.status(500).send("Logout failed");
-    res.clearCookie("connect.sid");
-    res.json({ message: `user @ ${req.user} logged out.` });
-    return res.redirect("/login");
-  })
+  res.clearCookie("session");
+  res.json({ message: `user @ ${req.user} logged out.` });
+  return res.redirect("/login");
 });
 
-/* routing endboss-- for routing files that dont actually exist i.e /dashboard */
-app.use(express.static(path.join(__dirname, "dist"))); // use vite to serve static
 app.get(/^.*$/, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
-/* start server */
-app.listen(PORT, ()=>{
-  console.log(`Server is active: ${PORT}`);
-})
+app.listen(PORT, ()=>{ console.log(`Server is active: ${PORT}`) });

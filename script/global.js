@@ -15,5 +15,5 @@ async function startFirebase() {
   }
 }
 const { app, auth, provider } = await startFirebase();
-export { app, auth, provider }
+export { app, auth, provider } 
 

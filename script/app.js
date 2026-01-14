@@ -1,3 +1,9 @@
+import mk7H2mP9vR4 from "../src/resources/images/mk7H2mP9vR4.jpeg";
+import ab3N8xQ5zW1 from "../src/resources/images/ab3N8xQ5zW1.jpeg";
+import gt9L4fG7sJ2 from "../src/resources/images/gt9L4fG7sJ2.jpg";
+import m9p5Z2hN9cX4 from "../src/resources/images/m9p5Z2hN9cX4.jpg";
+import sm1V6kY3dR8 from "../src/resources/images/sm1V6kY3dR8.webp";
+
 const service = document.querySelectorAll(".service");
 const vtOverlay = document.querySelector("#vt-overlay");
 const vtInterface = document.querySelector(".vt-interface");
@@ -8,17 +14,14 @@ const mCarrier = document.querySelector(".carrier");
 const userPhone = document.querySelector(".user-inp");
 const editNum = document.querySelector(".recipient-num-change");
 
-
 const air = document.querySelector(".air");
 const data = document.querySelector(".data");
 const send = document.querySelector(".send");
 
-
-
-
 Object.assign(userPhone.style, {
   fontSize: "1.3rem",
-  borderBottom: "1px solid var(--primary-color)",
+  borderBottom: "1px solid var(--text-dark)",
+  transition: "border-bottom .3s ease",
 })
 userPhone.addEventListener("input", async (e)=> {
   e.target.value = e.target.value.replace(/[^0-9]/g, "");
@@ -36,12 +39,15 @@ userPhone.addEventListener("input", async (e)=> {
         throw new Error(`Query failed, status code: ${res.status}`);
       }else {
         const data = await res.json();
+        console.log(mCarrier, data.carrier);
         mCarrier.classList.remove("vis");
-        if(data.carrier === "MTN") mCarrier.src = "/src/resources/images/mk7H2mP9vR4.jpeg";
-        else if(data.carrier === "Airtel") mCarrier.src = "/src/resources/images/ab3N8xQ5zW1.jpeg";
-        else if(data.carrier === "Glo") mCarrier.src = "/src/resources/images/gt9L4fG7sJ2.jpg";
-        else if(data.carrier === "9mobile") mCarrier.src = "/src/resources/images/9p5Z2hN9cX4.jpg";
-        else if(data.carrier === "Smile") mCarrier.src = "/src/resources/images/sm1V6kY3dR8.webp";
+        mCarrier.style.filter = "grayscale(0) brightness(1)";
+        if(data.carrier === "MTN") mCarrier.src = mk7H2mP9vR4;
+        else if(data.carrier === "Airtel") mCarrier.src = ab3N8xQ5zW1;
+        else if(data.carrier === "Glo") mCarrier.src = gt9L4fG7sJ2;
+        else if(data.carrier === "9mobile") mCarrier.src = m9p5Z2hN9cX4;
+        else if(data.carrier === "Smile") mCarrier.src = sm1V6kY3dR8;
+        else return;
         const editedNum = document.createElement("p");
         editedNum.classList.add("recipient-num");
         editedNum.textContent = verifiedNum;
@@ -64,7 +70,6 @@ editNum.addEventListener("click", (e)=> {
   e.preventDefault();
   const editedNo = document.querySelector(".recipient-num");
   editedNo.textContent = "Enter number";
-
   editNum.textContent = "Enter number";
   Object.assign(editNum.style, {
     color: "var(--p-light)",
@@ -91,7 +96,6 @@ function dataModal() {
   vtAmount.style.display = "none";
   const options = document.querySelector("#options"); 
   options.classList.add("data-sec");
-  
   options.innerHTML = `
     <div class="pdf-amt">
       <p>7 DAYS</p>
@@ -161,7 +165,7 @@ function showInterface() {
       vtOverlay.classList.add("modal-vis");
       if(service[0].contains(e.target)) airtimeModal();
       else if(service[1].contains(e.target)) dataModal();
-      else if(service[2].contains(e.target)) sendModal();
+      else if(service[2].contains(e.target)) return console.log("fish");
     })
   }
 } showInterface();

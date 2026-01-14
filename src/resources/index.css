@@ -1,9 +1,11 @@
 html {
-  min-width: 600px;
+  min-width: 660px;
 }
+
 .ham-overlay, .sidebar {
   display: none;
 }
+
 section {
   opacity: 0;
   transform: translateX(-4%);
@@ -21,7 +23,7 @@ section.nowvisible:nth-of-type(4) { transition-duration: 1.2s; }
 .hero {
   position: relative;
   min-height: var(--std-min-height);
-  background: linear-gradient(45deg, #000000ee, #00000055, #000000aa);
+  background: linear-gradient(45deg, #00000ca5, #10161fc4, #00000067);
 }
 
 img{
@@ -29,7 +31,7 @@ img{
   object-fit: cover;
   height: var(--full-per);
   width: var(--full-per);
-  filter: brightness(.4);
+  filter: grayscale(.4) brightness(.5);
   z-index: -1;
 }
 
@@ -93,7 +95,7 @@ nav {
   height: 2.7px;
   width: 100%;
   background-color: none;
-  transition: background-color .3s ease-out;
+  transition: background-color .25s ease-out;
 }
 
 .sec-nav div:hover .sec-nav-hover {
@@ -101,8 +103,7 @@ nav {
 }
 
 .hero-msg {
-  align-self: center;
-  text-align: center;
+  text-align: left;
   padding: 0 10% 2rem;
 }
 
@@ -118,7 +119,7 @@ nav {
 #vanishing-text{
   display: flex;
   margin-bottom: 2rem;
-  justify-self: center;
+  justify-self: left;
   min-height: 2.5rem;
   font-family: var(--sectxt);
   font-size: 1.5rem;
@@ -182,6 +183,10 @@ nav {
 
 #why .hiw-intro {
   margin-bottom: 5rem;
+}
+
+#why .sp span {
+  font-style: italic;
 }
 
 .reasons-container {
@@ -364,14 +369,15 @@ nav {
   font-size: 1.7rem;
   border: none;
   border-radius: 10px;
-  color: var(--p-light);
-  background: #3355dd;
+  color: var(--p-dark);
+  background: #ebdd8e;
+
   overflow: hidden;
   cursor: pointer;
 }
 
 .hiw-cta-btn:hover {
-  background: #2945cf;
+  background: #ece2aa;
 }
 
 #footer {
@@ -429,8 +435,8 @@ nav {
 }
 
 
-/* tablet */
-@media screen and (min-width: 426px) and (max-width: 635px) {
+/* tab */
+@media screen and (min-width: 426px) and (max-width: 768px) {
   .hero {
     min-height: 60dvh;
     min-height: initial;
@@ -451,7 +457,7 @@ nav {
     font-size: 4rem;
   }
    #vanishing-text {
-    justify-content: center;
+    justify-self:center;
   }
   #process {
     min-height: var(--std-min-height);
@@ -572,7 +578,7 @@ nav {
   #vanishing-text {
     min-height: 3rem;
     font-size: 1.3rem;
-    justify-content: center;
+    justify-self: center;
   }
   #why {
     min-height: 50dvh;
@@ -609,7 +615,7 @@ nav {
   }
   .reason span {
     margin-bottom: .7rem;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: var(--p-light);
   }

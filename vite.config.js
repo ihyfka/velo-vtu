@@ -10,7 +10,7 @@ export default defineConfig({
         getstarted: resolve(__dirname, "src", "resources", "login.html"),
         dashboard: resolve(__dirname, "src", "main", "app.html"),
         terms: resolve(__dirname, "src", "resources", "terms.html"),
-        'privacy-policy': resolve(__dirname, "src", "resources", "policy.html")
+        'privacy-policy': resolve(__dirname, "src", "resources", "policy.html") 
       }
     }
   }

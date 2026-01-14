@@ -17,7 +17,7 @@ body {
   object-fit: cover;
   height: var(--full-per);
   width: var(--full-per);
-  filter: brightness(.34);
+  filter: grayscale(.2) brightness(.4);
   z-index: -1;
   background: #00000CFE;
 }
@@ -31,7 +31,7 @@ nav {
   align-items: center;
   padding: 1rem .7rem;
   border-bottom: 1px solid var(--clean-border);
-  background: #020306;
+  background: #080b14;
   z-index: 1;
 }
 
@@ -320,6 +320,15 @@ nav {
   padding: 3px;
   align-items: center;
 }
+
+.user-inp {
+  font-size: 1.3rem;
+  border-bottom: 1px solid var(--text-dark);
+  transition: border-bottom .3s ease;
+}
+.user-inp:focus {
+  border-bottom: 1px solid var(--primary-color);
+} 
 
 .recipient-num {
   font-size: 1.2rem;

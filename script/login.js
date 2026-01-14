@@ -1,27 +1,22 @@
 import DOMPurify from "dompurify";
-import { getAnalytics } from "firebase/analytics";
 import { app, auth, provider } from "./global.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
   
 if(typeof document !== 'undefined') {
   const signInPage = document.querySelector("#signin-view");
   const signUpPage = document.querySelector("#signup-view");
-  const forgotPasswordPage = document.querySelector("#forgot-view");
+  //const forgotPasswordPage = document.querySelector("#forgot-view");
   const signInLink = document.querySelectorAll(".signin-link");
   const signUpLink = document.querySelector(".signup-link");
   const forgotPasswordLink = document.querySelector(".forgot-link");
 
-  const signUpName = signUpPage?.querySelectorAll("input")[0];
-  const signUpEmail = signUpPage?.querySelectorAll("input")[1];
   const signUpPasskey = signUpPage?.querySelectorAll("input")[2];
-  const signInEmail = signInPage?.querySelectorAll("input")[0];
-  const signInPasskey = signInPage?.querySelectorAll("input")[1];
-  const forgotEmailBtn = forgotPasswordPage?.querySelectorAll("input")[0];
+  // const forgotEmailBtn = forgotPasswordPage?.querySelectorAll("input")[0];
 
   const logWSocialBtn = document.querySelectorAll(".social-btn");
   const logWSignInBtn = signInPage?.querySelector(".btn-primary");
   const createAccountBtn = signUpPage?.querySelector(".btn-primary");
-  const sendEmailBtn = forgotPasswordPage?.querySelector(".btn-primary");
+  // const sendEmailBtn = forgotPasswordPage?.querySelector(".btn-primary");
  
   for(let i=0;i<logWSocialBtn.length;i++) {
     logWSocialBtn[i]?.addEventListener("click", (e)=>{
@@ -31,9 +26,7 @@ if(typeof document !== 'undefined') {
   }
   logWSignInBtn?.addEventListener("click", signInWEmail);
   signUpPasskey?.addEventListener("input", ()=>{
-    if(signUpPasskey !== "") {
-      document.querySelector("#requirements").style.display = "block";
-    }
+    if(signUpPasskey !== "") document.querySelector("#requirements").style.display = "block";
   })
   signInLink.forEach(link => {link.addEventListener("click", (e) => { e.preventDefault(); switchView('signin-view') })})
   signUpLink?.addEventListener("click", (e) => { e.preventDefault(); switchView('signup-view') })
@@ -54,9 +47,9 @@ export function stopLoader() {
   if(loaderOverlay) loaderOverlay.remove();
 }
 
-async function finalizeLogin(user) { //originally for fb
+async function finalizeLogin(user) {
   try {
-    const idToken = await user.getIdToken();
+    const idToken = await user.getIdToken(true);
     const sessionAuthRes = await fetch("/sessionAuth", {
       method: "POST",
       headers: { 
@@ -72,7 +65,7 @@ async function finalizeLogin(user) { //originally for fb
   }
 }
 
-async function authWGoogle() { //originally for g
+async function authWGoogle() {
   const response = await fetch("/google/auth", {
     method: 'POST'
   });
@@ -90,7 +83,7 @@ function switchView(viewId) {
     targetView.classList.add('active');
   }
 }
-/* validate fb session */
+
 async function signInWEmail() {
   initLoader();
   const signInPage = document.querySelector("#signin-view");
@@ -122,6 +115,7 @@ async function signInWEmail() {
     console.log("signin error!!");
   }
 }
+
 async function createAccountWEmail() {
   const signUpPage = document.querySelector("#signup-view");
   const signUpName = signUpPage?.querySelectorAll("input")[0];
@@ -148,7 +142,7 @@ async function createAccountWEmail() {
     console.log("account creation successful")
     await finalizeLogin(userCredential.user);
   }catch(err) {
-    //password criteria not met..
+    /* password criteria not met.. */
     stopLoader()
     document.querySelector("#requirements").style.display = "block";
     document.querySelector("#requirements").style.color = "#f33";

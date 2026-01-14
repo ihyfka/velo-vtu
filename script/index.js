@@ -64,14 +64,14 @@ const typingDelay = 3000;
 
 function typeEffect() {
   const currentText = text[index];
-  if(!isDeleting) { //typing
+  if(!isDeleting) { /* typing */
     vanishingTxt.textContent = currentText.substring(0, charIndex++);
     if(charIndex > currentText.length) {
       isDeleting = true;
       setTimeout(typeEffect, typingDelay);
       return;
     }
-  }else { //deleting
+  }else { /* deleting */
     vanishingTxt.textContent = currentText.substring(0, charIndex--);
     if(charIndex < 0) {
       isDeleting = false;
